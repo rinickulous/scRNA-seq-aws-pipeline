@@ -1,0 +1,9 @@
+2025-09-26 11:50:22	-	serene_fermi	-	15838c8f300945af385f2037c8a2fb16	f5c1082e-2730-4d3d-a8d7-2f47bd67500e	nextflow run workflows/main.nf -profile demo
+2025-09-26 11:58:19	-	determined_turing	-	15838c8f300945af385f2037c8a2fb16	09f70f2b-b4c0-4557-93c7-0c28f18f9e80	nextflow run workflows/main.nf -profile demo
+2025-09-26 11:58:59	-	admiring_mcnulty	-	128cad07e2f6fb32d425cd74de24f605	1a844879-e043-4170-86aa-153fa589e6d1	nextflow run workflows/main.nf -profile demo
+2025-09-26 12:01:10	-	grave_koch	-	128cad07e2f6fb32d425cd74de24f605	0bb860e1-704a-4df5-b8c4-c39e78c45d1e	nextflow run workflows/main.nf -profile demo
+2025-09-26 12:03:38	-	backstabbing_meitner	-	128cad07e2f6fb32d425cd74de24f605	c121ade0-fa39-4b96-ab5d-4a92a63f57d7	nextflow run workflows/main.nf -profile demo
+2025-09-26 12:03:57	-	admiring_sammet	-	128cad07e2f6fb32d425cd74de24f605	fad9bf1c-d640-43bd-becc-56d971f517bc	nextflow run workflows/main.nf --input data/demo/samplesheet.csv --outdir results_demo --max_cpus 2 --max_memory 4.GB
+2025-09-26 12:05:52	-	pensive_minsky	-	7ff79b93c3c32132ecf81c9ba7c89190	16526766-d7cf-4336-9de9-9b53d2466678	nextflow run workflows/main.nf --input data/demo/samplesheet.csv --outdir results_demo --max_cpus 2 --max_memory 4.GB
+2025-09-26 12:08:15	-	modest_hopper	-	7ff79b93c3c32132ecf81c9ba7c89190	80ba057f-bbfa-44e8-a14e-3cda16d79b5a	nextflow run workflows/main.nf --input data/demo/samplesheet.csv --outdir results_demo --max_cpus 2 --max_memory 4.GB
+2025-09-26 12:09:10	1.4s	jolly_bassi	OK	466809414ef25a52ee5958d635d1388e	68fa8a73-a5a1-44f1-9c7e-612cee68be8b	nextflow run workflows/main.nf --input data/demo/samplesheet.csv --outdir results_demo --max_cpus 2 --max_memory 4.GB

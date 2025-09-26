@@ -1,0 +1,2 @@
+sample_id,fastq_1,fastq_2,expected_cells
+demo_sample,data/demo/demo_sample_R1_001.fastq.gz,data/demo/demo_sample_R2_001.fastq.gz,500

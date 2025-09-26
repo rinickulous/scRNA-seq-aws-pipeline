@@ -1,0 +1,64 @@
+Sep-26 12:08:09.822 [main] DEBUG nextflow.cli.Launcher - $> nextflow run workflows/main.nf --input data/demo/samplesheet.csv --outdir results_demo --max_cpus 2 --max_memory 4.GB
+Sep-26 12:08:09.978 [main] DEBUG nextflow.cli.CmdRun - N E X T F L O W  ~  version 25.04.7
+Sep-26 12:08:10.034 [main] DEBUG nextflow.plugin.PluginsFacade - Setting up plugin manager > mode=prod; embedded=false; plugins-dir=/Users/nwhite/.nextflow/plugins; core-plugins: nf-amazon@2.15.0-patch1,nf-azure@1.16.0-patch1,nf-cloudcache@0.4.3,nf-codecommit@0.2.3,nf-console@1.2.1,nf-google@1.21.1,nf-k8s@1.0.0,nf-tower@1.11.4-patch1,nf-wave@1.12.1
+Sep-26 12:08:10.084 [main] INFO  o.pf4j.DefaultPluginStatusProvider - Enabled plugins: []
+Sep-26 12:08:10.085 [main] INFO  o.pf4j.DefaultPluginStatusProvider - Disabled plugins: []
+Sep-26 12:08:10.089 [main] INFO  org.pf4j.DefaultPluginManager - PF4J version 3.12.0 in 'deployment' mode
+Sep-26 12:08:10.111 [main] INFO  org.pf4j.AbstractPluginManager - No plugins
+Sep-26 12:08:10.215 [main] DEBUG n.secret.LocalSecretsProvider - Secrets store: /Users/nwhite/.nextflow/secrets/store.json
+Sep-26 12:08:10.235 [main] DEBUG nextflow.secret.SecretsLoader - Discovered secrets providers: [nextflow.secret.LocalSecretsProvider@469d003c] - activable => nextflow.secret.LocalSecretsProvider@469d003c
+Sep-26 12:08:10.301 [main] DEBUG nextflow.cli.CmdRun - Applied DSL=2 from script declaration
+Sep-26 12:08:10.332 [main] DEBUG nextflow.cli.CmdRun - Launching `workflows/main.nf` [modest_hopper] DSL2 - revision: 7ff79b93c3
+Sep-26 12:08:10.334 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins default=[]
+Sep-26 12:08:10.335 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins resolved requirement=[]
+Sep-26 12:08:10.437 [main] DEBUG nextflow.Session - Session UUID: 80ba057f-bbfa-44e8-a14e-3cda16d79b5a
+Sep-26 12:08:10.437 [main] DEBUG nextflow.Session - Run name: modest_hopper
+Sep-26 12:08:10.437 [main] DEBUG nextflow.Session - Executor pool size: 4
+Sep-26 12:08:10.451 [main] DEBUG nextflow.file.FilePorter - File porter settings maxRetries=3; maxTransfers=50; pollTimeout=null
+Sep-26 12:08:10.472 [main] DEBUG nextflow.util.ThreadPoolBuilder - Creating thread pool 'FileTransfer' minSize=10; maxSize=12; workQueue=LinkedBlockingQueue[-1]; allowCoreThreadTimeout=false
+Sep-26 12:08:15.528 [main] DEBUG nextflow.cli.CmdRun - 
+  Version: 25.04.7 build 5955
+  Created: 08-09-2025 13:29 UTC (09:29 EDT)
+  System: Mac OS X 13.7.6
+  Runtime: Groovy 4.0.26 on OpenJDK 64-Bit Server VM 17.0.16+0
+  Encoding: UTF-8 (UTF-8)
+  Process: 58981@Stellas-MacBook-Pro1.local [10.0.0.128]
+  CPUs: 4 - Mem: 8 GB (15.2 MB) - Swap: 3 GB (1.1 GB)
+Sep-26 12:08:15.547 [main] DEBUG nextflow.Session - Work-dir: /Users/nwhite/Programming/scRNA-seq-aws-pipeline/work [Mac OS X]
+Sep-26 12:08:15.548 [main] DEBUG nextflow.Session - Script base path does not exist or is not a directory: /Users/nwhite/Programming/scRNA-seq-aws-pipeline/workflows/bin
+Sep-26 12:08:15.566 [main] DEBUG nextflow.executor.ExecutorFactory - Extension executors providers=[]
+Sep-26 12:08:15.585 [main] DEBUG nextflow.Session - Observer factory: DefaultObserverFactory
+Sep-26 12:08:15.616 [main] DEBUG nextflow.Session - Observer factory (v2): LinObserverFactory
+Sep-26 12:08:15.658 [main] DEBUG nextflow.cache.CacheFactory - Using Nextflow cache factory: nextflow.cache.DefaultCacheFactory
+Sep-26 12:08:15.675 [main] DEBUG nextflow.util.CustomThreadPool - Creating default thread pool > poolSize: 5; maxThreads: 1000
+Sep-26 12:08:15.770 [main] DEBUG nextflow.Session - Session start
+Sep-26 12:08:16.696 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+Sep-26 12:08:16.717 [main] INFO  nextflow.Nextflow - 
+scRNA-seq Analysis Pipeline
+===========================
+Input:       data/demo/samplesheet.csv
+Output:      results_demo
+Profile:     standard
+
+Sep-26 12:08:16.758 [main] DEBUG nextflow.script.ScriptRunner - Parsed script files:
+  Script_18bdb40e9085fdfd: /Users/nwhite/Programming/scRNA-seq-aws-pipeline/workflows/main.nf
+  Script_310e0edd47db6f72: /Users/nwhite/Programming/scRNA-seq-aws-pipeline/workflows/modules/input_check.nf
+Sep-26 12:08:16.759 [main] DEBUG nextflow.Session - Session aborted -- Cause: Cannot find a component with name 'INPUT_CHECK' in module: /Users/nwhite/Programming/scRNA-seq-aws-pipeline/workflows/modules/input_check.nf
+Sep-26 12:08:16.773 [main] ERROR nextflow.cli.Launcher - @unknown
+nextflow.exception.MissingModuleComponentException: Cannot find a component with name 'INPUT_CHECK' in module: /Users/nwhite/Programming/scRNA-seq-aws-pipeline/workflows/modules/input_check.nf
+	at nextflow.script.ScriptMeta.addModule(ScriptMeta.groovy:314)
+	at nextflow.script.ScriptMeta.addModule(ScriptMeta.groovy:305)
+	at nextflow.script.IncludeDef.load0(IncludeDef.groovy:116)
+	at org.codehaus.groovy.vmplugin.v8.IndyInterface.fromCache(IndyInterface.java:321)
+	at Script_18bdb40e9085fdfd.runScript(Script_18bdb40e9085fdfd:35)
+	at org.codehaus.groovy.vmplugin.v8.IndyInterface.fromCache(IndyInterface.java:321)
+	at nextflow.script.BaseScript.run0(BaseScript.groovy:159)
+	at org.codehaus.groovy.vmplugin.v8.IndyInterface.fromCache(IndyInterface.java:321)
+	at nextflow.script.BaseScript.run(BaseScript.groovy:193)
+	at nextflow.script.parser.v1.ScriptLoaderV1.runScript(ScriptLoaderV1.groovy:246)
+	at nextflow.script.parser.v1.ScriptLoaderV1.runScript(ScriptLoaderV1.groovy)
+	at nextflow.script.ScriptRunner.run(ScriptRunner.groovy:246)
+	at nextflow.script.ScriptRunner.execute(ScriptRunner.groovy:139)
+	at nextflow.cli.CmdRun.run(CmdRun.groovy:379)
+	at nextflow.cli.Launcher.run(Launcher.groovy:513)
+	at nextflow.cli.Launcher.main(Launcher.groovy:673)
