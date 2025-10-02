@@ -1,0 +1,58 @@
+.
+├── LICENSE
+├── README.md
+├── config
+│   ├── aws.config
+│   ├── awsbatch.config
+│   ├── base.config
+│   ├── demo.config
+│   ├── pipeline.config
+│   └── test.config
+├── data
+│   ├── demo
+│   │   ├── create_demo_fastqs.py
+│   │   ├── demo_sample_R1_001.fastq.gz
+│   │   ├── demo_sample_R2_001.fastq.gz
+│   │   └── samplesheet.csv
+│   ├── reference
+│   └── test_data
+│       └── samplesheet.csv
+├── directory_structure.txt
+├── docs
+├── environment.yml
+├── main.nf
+├── modules
+│   ├── cellranger
+│   │   └── main.nf
+│   ├── fastqc
+│   │   └── main.nf
+│   └── seurat
+│       └── main.nf
+├── nextflow.config
+├── requirements.txt
+├── results
+├── samplesheet.csv
+├── scripts
+│   ├── analysis
+│   ├── aws
+│   │   └── setup_s3_buckets.sh
+│   ├── demo
+│   │   └── setup_demo_data.sh
+│   ├── preprocessing
+│   ├── setup_aws_batch.sh
+│   └── setup_s3_data.sh
+├── tests
+├── work
+└── workflows
+    ├── main.nf
+    ├── modules
+    │   ├── cellranger.nf
+    │   ├── fastqc.nf
+    │   ├── input_check.nf
+    │   ├── multiqc.nf
+    │   └── samplesheet_check.nf
+    ├── scrna_seq.nf
+    └── subworkflows
+        └── scrna_pipeline.nf
+
+22 directories, 34 files

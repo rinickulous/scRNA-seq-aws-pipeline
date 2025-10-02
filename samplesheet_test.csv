@@ -1,0 +1,2 @@
+sample_id,sample_name,fastq_dir
+test_sample,test_pbmc,s3://scrna-pipeline-nwhite-input/test_data/

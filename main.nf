@@ -5,9 +5,6 @@ nextflow.enable.dsl = 2
 ========================================================================================
     scRNA-seq Analysis Pipeline with AWS Integration
 ========================================================================================
-    GitHub : https://github.com/rinickulous/scRNA-seq-aws-pipeline
-    Author : Your Name
-----------------------------------------------------------------------------------------
 */
 
 // Pipeline version
@@ -20,12 +17,6 @@ if (params.help) {
     exit 0
 }
 
-/*
-========================================================================================
-    PARAMETER VALIDATION
-========================================================================================
-*/
-
 // Input/output parameters
 params.input = null
 params.outdir = "./results"
@@ -37,7 +28,6 @@ params.genome_name = "custom_genome"
 // AWS parameters
 params.awsregion = "us-east-1"
 params.awsqueue = null
-//params.workDir = "s3://your-bucket/work"
 
 // Validate required parameters
 if (!params.input) {
@@ -46,11 +36,13 @@ if (!params.input) {
 
 /*
 ========================================================================================
-    IMPORT WORKFLOWS
+    IMPORT MODULES DIRECTLY
 ========================================================================================
 */
 
-include { SCRNA_SEQ } from './workflows/scrna_seq'
+include { FASTQC } from './modules/fastqc/main'
+include { CELLRANGER_COUNT; CELLRANGER_MKREF } from './modules/cellranger/main'
+include { SEURAT_ANALYSIS } from './modules/seurat/main'
 
 /*
 ========================================================================================
@@ -81,7 +73,6 @@ def helpMessage() {
     AWS Batch options:
       --awsregion [str]           AWS region (default: us-east-1)
       --awsqueue [str]            AWS Batch queue name
-      --workDir [s3://path]       S3 bucket for work directory
       
     Other options:
       --help                      Show this help message
@@ -89,7 +80,6 @@ def helpMessage() {
 }
 
 def checkSamplesheet(samplesheet) {
-    // Parse and validate samplesheet
     Channel
         .fromPath(samplesheet)
         .splitCsv(header: true)
@@ -98,7 +88,6 @@ def checkSamplesheet(samplesheet) {
             meta.id = row.sample_id
             meta.samples = row.sample_name ?: null
             
-            // Check if fastq_dir exists
             def fastq_path = file(row.fastq_dir)
             if (!fastq_path.exists()) {
                 error "Fastq directory does not exist: ${row.fastq_dir}"
@@ -116,7 +105,6 @@ def checkSamplesheet(samplesheet) {
 
 workflow {
     
-    // Print run information
     log.info """
     =========================================
     scRNA-seq Analysis Pipeline v${version}
@@ -132,26 +120,41 @@ workflow {
     // Create input channel from samplesheet
     ch_input = checkSamplesheet(params.input)
     
-    // Create reference channels
-    ch_reference = params.reference ? Channel.fromPath(params.reference) : Channel.empty()
-    ch_fasta = params.fasta ? Channel.fromPath(params.fasta) : Channel.empty()
-    ch_gtf = params.gtf ? Channel.fromPath(params.gtf) : Channel.empty()
+    // Create channels for version tracking
+    ch_versions = Channel.empty()
     
-    // Run main workflow
-    SCRNA_SEQ(
+    // Run FastQC
+    FASTQC(ch_input)
+    ch_versions = ch_versions.mix(FASTQC.out.versions)
+    
+    // Handle reference
+    if (params.reference) {
+        ch_cellranger_ref = Channel.fromPath(params.reference)
+    } else if (params.fasta && params.gtf) {
+        CELLRANGER_MKREF(
+            Channel.fromPath(params.fasta),
+            Channel.fromPath(params.gtf),
+            params.genome_name
+        )
+        ch_cellranger_ref = CELLRANGER_MKREF.out.reference
+        ch_versions = ch_versions.mix(CELLRANGER_MKREF.out.versions)
+    } else {
+        error "Either --reference or both --fasta and --gtf must be provided"
+    }
+    
+    // Run Cell Ranger Count
+    CELLRANGER_COUNT(
         ch_input,
-        ch_reference,
-        ch_fasta,
-        ch_gtf
+        ch_cellranger_ref
     )
+    ch_versions = ch_versions.mix(CELLRANGER_COUNT.out.versions)
     
+    // Run Seurat Analysis
+    SEURAT_ANALYSIS(
+        CELLRANGER_COUNT.out.filtered_matrix
+    )
+    ch_versions = ch_versions.mix(SEURAT_ANALYSIS.out.versions)
 }
-
-/*
-========================================================================================
-    COMPLETION NOTIFICATION
-========================================================================================
-*/
 
 workflow.onComplete {
     log.info """

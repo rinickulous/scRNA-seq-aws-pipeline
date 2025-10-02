@@ -1,0 +1,2 @@
+sample,fastq_1,fastq_2
+pbmc3k,s3://scrna-pipeline-nwhite-input/pbmc3k/,

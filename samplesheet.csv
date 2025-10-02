@@ -1,0 +1,4 @@
+sample_id,sample_name,fastq_dir
+sample1,PBMC_1k,s3://your-data-bucket/fastq/sample1/
+sample2,PBMC_5k,s3://your-data-bucket/fastq/sample2/
+sample3,PBMC_10k,s3://your-data-bucket/fastq/sample3/
