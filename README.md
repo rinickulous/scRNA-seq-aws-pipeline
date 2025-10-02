@@ -1,176 +1,151 @@
-# Single-Cell RNA-seq Analysis Pipeline on AWS
+# scRNA-seq AWS Pipeline
 
-[![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-%E2%89%A523.04.0-23aa62.svg)](https://www.nextflow.io/)
-[![AWS](https://img.shields.io/badge/platform-AWS-orange.svg)](https://aws.amazon.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+A Nextflow DSL2 pipeline for single-cell RNA-seq analysis with AWS integration capabilities.
 
-## Overview
+## 🎯 Project Status
 
-Production-ready single-cell RNA-seq analysis pipeline designed for scalable processing on AWS infrastructure. This pipeline automates the complete workflow from raw FASTQ files to quality-controlled count matrices with basic downstream analysis and visualization.
+**Pipeline Status**: ✅ Functional (local/EC2 execution)  
+**AWS Batch Status**: ⚠️ Configuration challenges encountered  
+**Recommended Deployment**: EC2 instance or Nextflow Tower/Seqera Platform
 
-## Features
+## 📋 Overview
 
-- ✅ **Automated Quality Control** - FastQC, Cell Ranger metrics, and Seurat-based filtering
-- ✅ **AWS S3 Integration** - Seamless data transfer and storage management  
-- ✅ **Nextflow Workflow Management** - Reproducible, scalable pipeline execution
-- ✅ **Modular Design** - Easy to maintain, extend, and customize
-- ✅ **Comprehensive Documentation** - Clear usage instructions and troubleshooting guides
-- ✅ **Test Dataset Included** - Quick validation with provided sample data
+This pipeline implements a complete scRNA-seq analysis workflow using:
+- **FastQC** for quality control
+- **Cell Ranger** for alignment and counting
+- **Seurat** for downstream analysis
 
-## Pipeline Overview
+Built with Nextflow DSL2 for modularity and reproducibility.
 
-```mermaid
-graph LR
-    A[Raw FASTQ] --> B[FastQC QC]
-    B --> C[Cell Ranger Count]
-    C --> D[Seurat Filtering]
-    D --> E[Basic Analysis]
-    E --> F[QC Report]
-    
-    G[S3 Input] --> A
-    F --> H[S3 Output]
-```
+## ✅ What Works
 
-## Quick Start
+- ✅ Modular DSL2 pipeline structure
+- ✅ FastQC quality control module
+- ✅ Cell Ranger alignment and counting
+- ✅ Seurat analysis integration
+- ✅ S3 integration for data storage
+- ✅ Local execution with Docker
+- ✅ EC2 execution capability
+- ✅ Proper configuration management
+
+## ⚠️ Known Issues
+
+### AWS Batch Integration
+During development, we encountered persistent issues with AWS Batch job submission:
+
+**Error**: `The user value contains invalid characters. Enter a value that matches the pattern ^([a-z0-9_][a-z0-9_-]{0,30})$`
+
+**Root Cause Investigation**:
+- AWS Batch has strict job naming requirements incompatible with Nextflow's DSL2 process naming conventions (e.g., `WORKFLOW:PROCESS`)
+- Attempted solutions included various job name sanitization strategies
+- Issue may be related to IAM user configuration or root account usage
+
+**Recommended Alternatives**:
+1. Run on EC2 instances directly
+2. Use AWS Genomics CLI
+3. Deploy via Nextflow Tower/Seqera Platform
+4. Consider nf-core/scrnaseq pipeline which has proven AWS Batch configurations
+
+## 🚀 Quick Start
 
 ### Prerequisites
-- [Nextflow](https://www.nextflow.io/docs/latest/getstarted.html) (≥22.04.0)
-- [AWS CLI](https://aws.amazon.com/cli/) configured with appropriate permissions
-- [Conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html) or [Mamba](https://mamba.readthedocs.io/)
+- Nextflow (>= 21.10.3)
+- Docker or Singularity
+- AWS CLI configured
+- S3 buckets for data storage
 
-### Installation
-
+### Local Execution
 ```bash
-# Clone repository
-git clone https://github.com/rinickulous/scRNA-seq-aws-pipeline.git
-cd scRNA-seq-aws-pipeline
-
-# Create conda environment
-conda env create -f environment.yml
-conda activate scrna-pipeline
-
-# Configure AWS (if not already done)
-aws configure
+nextflow run main.nf \
+    -profile docker \
+    --input samplesheet.csv \
+    --reference /path/to/reference \
+    --outdir results \
+    -work-dir ./work
 ```
 
-### Test Run
-
+### EC2 Execution
 ```bash
-# Quick test with included sample data
-nextflow run workflows/main.nf -profile test
+# Launch EC2 instance (recommended: t3.xlarge, 100GB storage)
+# Install dependencies
+sudo yum install docker git -y
+sudo service docker start
+curl -s https://get.nextflow.io | bash
 
-# Full pipeline with your data
-nextflow run workflows/main.nf \
-    --input s3://your-bucket/raw-data/ \
-    --outdir s3://your-bucket/results/ \
-    -profile aws
+# Run pipeline
+nextflow run main.nf \
+    -profile docker \
+    --input s3://your-bucket/samplesheet.csv \
+    --reference s3://your-bucket/reference/GRCh38 \
+    --outdir s3://your-bucket/results \
+    -work-dir ./work
 ```
 
-## Input Data
+## 📁 Pipeline Structure
 
-The pipeline expects:
-- **Raw FASTQ files** (10X Genomics format: `*_R1_001.fastq.gz`, `*_R2_001.fastq.gz`)
-- **Sample sheet** (CSV format with sample metadata)
-- **Reference genome** (automatically downloaded or provide custom)
+```
+├── main.nf                 # Main pipeline script
+├── nextflow.config         # Configuration file
+├── modules/               # DSL2 modules
+│   ├── fastqc/
+│   ├── cellranger/
+│   └── seurat/
+├── workflows/             # Workflow definitions
+└── conf/                  # Profile configurations
+    ├── base.config
+    └── awsbatch.config    # AWS Batch config (see known issues)
+```
 
-### Sample Sheet Format
+## 📊 Input Requirements
+
+### Samplesheet Format
 ```csv
-sample_id,fastq_1,fastq_2,expected_cells
-sample_1,s3://bucket/sample_1_R1.fastq.gz,s3://bucket/sample_1_R2.fastq.gz,5000
-sample_2,s3://bucket/sample_2_R1.fastq.gz,s3://bucket/sample_2_R2.fastq.gz,3000
+sample_id,sample_name,fastq_dir
+sample1,PBMC_1k,s3://bucket/fastq/sample1/
+sample2,PBMC_5k,s3://bucket/fastq/sample2/
 ```
 
-## Output Structure
+### Reference Genome
+- Pre-built Cell Ranger reference
+- Or provide FASTA + GTF for custom reference build
 
-```
-results/
-├── fastqc/                    # Quality control reports
-├── cellranger/                # Cell Ranger outputs
-│   ├── {sample}/
-│   │   ├── outs/
-│   │   │   ├── filtered_feature_bc_matrix/
-│   │   │   └── web_summary.html
-├── seurat_qc/                 # Filtered count matrices
-├── reports/                   # Combined QC report
-└── plots/                     # Visualization outputs
-```
+## 🔬 Analysis Steps
 
-## Configuration
+1. **Quality Control**: FastQC analysis of raw reads
+2. **Alignment**: Cell Ranger alignment to reference genome
+3. **Counting**: Generation of feature-barcode matrices
+4. **Analysis**: Seurat-based clustering and differential expression
 
-### AWS Setup
-```bash
-# Set up S3 buckets
-./scripts/aws/setup_s3_buckets.sh
+## 💡 Lessons Learned
 
-# Upload test data
-./scripts/aws/data_upload.sh data/test_data/ s3://your-input-bucket/
-```
+1. **AWS Batch Complexity**: The integration between Nextflow DSL2 and AWS Batch requires careful attention to job naming conventions
+2. **IAM Considerations**: Root account usage may cause unexpected issues with AWS Batch
+3. **Alternative Solutions**: Established pipelines like nf-core/scrnaseq have solved many of these integration challenges
+4. **Resource Requirements**: Cell Ranger requires significant compute resources (8+ CPUs, 64GB+ RAM)
 
-### Pipeline Parameters
-Key parameters in `config/pipeline.config`:
+## 🔄 Future Improvements
 
-```nextflow
-params {
-    // Input/Output
-    input = null                    # Path to input directory or samplesheet
-    outdir = "./results"           # Output directory
-    
-    // Reference
-    genome = "GRCh38"              # Reference genome
-    
-    // Cell Ranger
-    expected_cells = 3000          # Expected number of cells
-    
-    // Filtering thresholds  
-    min_cells = 3                  # Minimum cells per gene
-    min_features = 200             # Minimum genes per cell
-    max_mt_percent = 20            # Maximum mitochondrial gene %
-}
-```
+- [ ] Resolve AWS Batch job naming compatibility
+- [ ] Add support for alternative aligners (STARsolo, Alevin)
+- [ ] Implement automated cell type annotation
+- [ ] Add multi-sample integration capabilities
+- [ ] Create Nextflow Tower deployment configuration
 
-## Documentation
+## 🤝 Contributing
 
-- 📖 [Installation Guide](docs/installation.md)
-- 🚀 [Usage Instructions](docs/usage.md) 
-- ⚙️ [Configuration Options](docs/configuration.md)
-- 🔧 [Troubleshooting](docs/troubleshooting.md)
-- ☁️ [AWS Setup Guide](docs/aws_setup.md)
+This pipeline was developed as a learning exercise in AWS/Nextflow integration. Contributions and suggestions for AWS Batch compatibility fixes are welcome.
 
-## Testing
+## 📚 References
 
-```bash
-# Run integration tests
-./tests/test_pipeline.sh
+- [Nextflow Documentation](https://www.nextflow.io/docs/latest/index.html)
+- [AWS Batch + Nextflow Guide](https://www.nextflow.io/docs/latest/aws.html)
+- [nf-core/scrnaseq](https://github.com/nf-core/scrnaseq) - Production-ready alternative
+- [Cell Ranger](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/what-is-cell-ranger)
 
-# Validate outputs
-python tests/validate_outputs.py results/
-```
+## 📄 License
 
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Support
-
-- 📧 **Email**: nickk.white@gmail.com
-- 🐛 **Issues**: [GitHub Issues](https://github.com/rinickulous/scRNA-seq-aws-pipeline/issues)
-- 📚 **Documentation**: [Wiki](https://github.com/rinickulous/scRNA-seq-aws-pipeline/wiki)
-
-## Acknowledgments
-
-- [10X Genomics](https://www.10xgenomics.com/) for Cell Ranger
-- [Seurat team](https://satijalab.org/seurat/) for single-cell analysis framework
-- [Nextflow](https://www.nextflow.io/) for workflow management
-- [nf-core](https://nf-co.re/) for pipeline best practices
+MIT
 
 ---
 
-**Version**: 1.0.0 | **Last Updated**: September 2025
+**Note**: This pipeline successfully demonstrates Nextflow DSL2 architecture and scRNA-seq analysis workflow design. For production AWS deployment, consider using established solutions like nf-core/scrnaseq or Nextflow Tower which have resolved the AWS Batch integration challenges encountered here.
